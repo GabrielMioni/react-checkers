@@ -1,0 +1,22 @@
+.board-col {
+    display: inline-block;
+    max-width: 80px;
+}
+
+.square {
+    background: no-repeat #fff;
+    border: none;
+    height: 80px;
+    width: 80px;
+    padding: 5px;
+    background-origin: content-box;
+    background-size: contain;
+}
+
+.square.player1, .square.player2, .square.movable {
+    cursor: pointer;
+}
+
+.square.black {
+    background-color: #262626;
+}
