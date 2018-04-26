@@ -141,17 +141,22 @@ class Board extends React.Component {
             let col = getColAsInt(this.columns, coordinates);
             let row = getRowAsInt(coordinates);
 
-            let player = returnPlayerName(this.currentPlayer);
+            let currentPlayer = returnPlayerName(this.currentPlayer);
 
-            let playerMoveClass = player + ('-move');
-            let moveToClass = this.moves.indexOf(coordinates) > -1 ? 'movable ' + player : '';
+            let playerMoveClass = currentPlayer + ('-move');
+            let moveToClass = this.moves.indexOf(coordinates) > -1 ? 'movable ' + currentPlayer : '';
             let colorClass  = ( isOdd(col) && isOdd(row) || (!isOdd(col) && !(isOdd(row)) ) ) ? 'white' : 'black';
 
             let squareClasses = [];
+
             squareClasses.push(coordinates);
             squareClasses.push(playerMoveClass);
             squareClasses.push(moveToClass);
             squareClasses.push(colorClass);
+
+            if (this.boardState[coordinates] !== null) {
+                squareClasses.push(this.boardState[coordinates].player + ' piece');
+            }
 
             squareClasses = squareClasses.join(' ');
 
