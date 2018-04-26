@@ -19,6 +19,16 @@ class ReactCheckers extends React.Component {
         }
     }
 
+    getCurrentState() {
+        const history = this.state.history.slice(0, this.state.stepNumber + 1);
+        return history[history.length - 1];
+    }
+
+    handleClick(coordinates) {
+        const currentState = this.getCurrentState();
+        console.log(currentState);
+    }
+
     setColumns() {
         const columns = {};
         columns.a = 0;
@@ -93,6 +103,7 @@ class ReactCheckers extends React.Component {
                 currentPlayer = {currentPlayer}
                 moves = {this.state.moves}
                 columns = {columns}
+                onClick = {(coordinates) => this.handleClick(coordinates)}
             />
         );
     }
@@ -100,9 +111,9 @@ class ReactCheckers extends React.Component {
 
 function Square(props) {
 
-    let coordinates = props['coordinates'];
-    let squareClasses = props['squareClasses'];
-    let onClick = props['onClick'];
+    const coordinates = props['coordinates'];
+    const squareClasses = props['squareClasses'];
+    const onClick = props['onClick'];
 
     return (
         <button className = { "square " + (squareClasses) } onClick={onClick} />
@@ -117,6 +128,7 @@ class Board extends React.Component {
         this.currentPlayer = props.currentPlayer;
         this.moves = props.moves;
         this.columns = props.columns;
+        this.onClick = props.onClick;
     }
 
     renderSquare(coordinates, squareClasses) {
@@ -124,6 +136,7 @@ class Board extends React.Component {
             <Square
                 key = {coordinates}
                 squareClasses = {squareClasses}
+                onClick = {() => this.props.onClick(coordinates) }
             />
         );
     }
