@@ -10,7 +10,12 @@ class ReactCheckers extends React.Component {
         this.columns = this.setColumns();
 
         this.state = {
-            history: this.createBoard(),
+            history: [{
+                boardState: this.createBoard(),
+                currentPlayer: true,
+            }],
+            moves: [],
+            stepNumber: 0,
         }
     }
 
@@ -76,7 +81,88 @@ class ReactCheckers extends React.Component {
     }
 
     render() {
-        return('');
+        const history = this.state.history;
+        const currentState = history[this.state.stepNumber];
+        const boardState = currentState.boardState;
+        const currentPlayer = currentState.currentPlayer;
+
+        return(
+            <Board
+                boardState = {boardState}
+                currentPlayer = {currentPlayer}
+                moves = {this.state.moves}
+            />
+        );
+    }
+}
+
+function Square(props) {
+
+    let coordinates = props['coordinates'];
+    let squareClasses = props['squareClasses'];
+    let onClick = props['onClick'];
+
+    return (
+        <button className = { "square " + (squareClasses) } onClick={onClick} />
+    );
+}
+
+class Board extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.boardState = props.boardState;
+        this.currentPlayer = props.currentPlayer;
+        this.moves = props.moves;
+        this.columns = props.columns;
+    }
+
+    renderSquare(coordinates, squareClasses) {
+        return (
+            <Square
+                key = {coordinates}
+                squareClasses = {squareClasses}
+            />
+        );
+    }
+
+    render() {
+        let boardRender = [];
+        let columnsRender = [];
+
+        for (let coordinates in this.boardState) {
+
+            if (!this.boardState.hasOwnProperty(coordinates)) {
+                continue;
+            }
+
+            let col = getColAsInt(coordinates);
+            let row = getRowAsInt(coordinates);
+
+            let player = returnPlayerName(this.currentPlayer);
+
+            let playerMoveClass = player + ('-move');
+            let moveToClass = this.moves.indexOf(coordinates) > -1 ? 'movable ' + player : '';
+            let colorClass  = ( isOdd(col) && isOdd(row) || (!isOdd(col) && !(isOdd(row)) ) ) ? 'white' : 'black';
+
+            let squareClasses = [];
+            squareClasses.push(coordinates);
+            squareClasses.push(playerMoveClass);
+            squareClasses.push(moveToClass);
+            squareClasses.push(colorClass);
+
+            squareClasses = squareClasses.join(' ');
+
+            columnsRender.push(this.renderSquare(coordinates, squareClasses, this.boardState[coordinates]));
+
+            if (columnsRender.length >= 8) {
+                columnsRender = columnsRender.reverse();
+                boardRender.push(<div key={boardRender.length} className="board-col">{columnsRender}</div>);
+                columnsRender = [];
+            }
+        }
+
+        return (boardRender);
     }
 }
 
@@ -86,3 +172,19 @@ ReactDOM.render(
     <ReactCheckers />,
     document.getElementById('root')
 );
+
+function isOdd(n) {
+    return Math.abs(n % 2) === 1;
+}
+
+function getRowAsInt(coordinate) {
+    return parseInt(coordinate.charAt(1), 10);
+}
+
+function getColAsInt(columns, colReq) {
+    return columns[colReq];
+}
+
+function returnPlayerName(playerBool) {
+    return playerBool === true ? 'player1' : 'player2';
+}
