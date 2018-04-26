@@ -20,3 +20,16 @@
 .square.black {
     background-color: #262626;
 }
+
+.square.player1 {
+    background-image: url("img/red-pawn.png");
+}
+.square.player2 {
+    background-image: url("img/blue-pawn.png");
+}
+.square.player1.king {
+    background-image: url("img/red-king.png");
+}
+.square.player2.king {
+    background-image: url("img/blue-king.png");
+}
