@@ -81,6 +81,7 @@ class ReactCheckers extends React.Component {
     }
 
     render() {
+        const columns = this.columns;
         const history = this.state.history;
         const currentState = history[this.state.stepNumber];
         const boardState = currentState.boardState;
@@ -91,6 +92,7 @@ class ReactCheckers extends React.Component {
                 boardState = {boardState}
                 currentPlayer = {currentPlayer}
                 moves = {this.state.moves}
+                columns = {columns}
             />
         );
     }
@@ -136,7 +138,7 @@ class Board extends React.Component {
                 continue;
             }
 
-            let col = getColAsInt(coordinates);
+            let col = getColAsInt(this.columns, coordinates);
             let row = getRowAsInt(coordinates);
 
             let player = returnPlayerName(this.currentPlayer);
@@ -177,12 +179,12 @@ function isOdd(n) {
     return Math.abs(n % 2) === 1;
 }
 
-function getRowAsInt(coordinate) {
-    return parseInt(coordinate.charAt(1), 10);
+function getColAsInt(columns, coordinate) {
+    return columns[coordinate.charAt(0)];
 }
 
-function getColAsInt(columns, colReq) {
-    return columns[colReq];
+function getRowAsInt(coordinate) {
+    return parseInt(coordinate.charAt(1), 10);
 }
 
 function returnPlayerName(playerBool) {
