@@ -113,7 +113,7 @@ class ReactCheckers extends React.Component {
             this.setState({
                 history: this.state.history.concat([{
                     boardState: boardState,
-                    currentPlayer: !this.state.history.currentPlayer,
+                    currentPlayer: !currentState.currentPlayer,
                 }]),
                 activePiece: null,
                 moves: [],
