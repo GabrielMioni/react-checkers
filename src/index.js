@@ -272,6 +272,7 @@ class ReactCheckers extends React.Component {
     render() {
         const columns = this.columns;
         const history = this.state.history;
+        const activePiece = this.state.activePiece;
         const currentState = history[this.state.stepNumber];
         const boardState = currentState.boardState;
         const currentPlayer = currentState.currentPlayer;
@@ -283,6 +284,7 @@ class ReactCheckers extends React.Component {
             <Board
                 boardState = {boardState}
                 currentPlayer = {currentPlayer}
+                activePiece = {activePiece}
                 moves = {moves}
                 columns = {columns}
                 onClick = {(coordinates) => this.handleClick(coordinates)}
@@ -306,10 +308,12 @@ class Board extends React.Component {
         super(props);
 
         this.boardState = props.boardState;
+        this.activePiece = props.activePiece;
         this.currentPlayer = props.currentPlayer;
         this.moves = props.moves;
         this.columns = props.columns;
         this.onClick = props.onClick;
+
     }
 
     renderSquare(coordinates, squareClasses) {
@@ -325,6 +329,8 @@ class Board extends React.Component {
     render() {
         let boardRender = [];
         let columnsRender = [];
+
+        console.log(this.props);
 
         for (let coordinates in this.boardState) {
 
@@ -344,9 +350,12 @@ class Board extends React.Component {
             let squareClasses = [];
 
             squareClasses.push(coordinates);
-            // squareClasses.push(playerMoveClass);
             squareClasses.push(moveToClass);
             squareClasses.push(colorClass);
+
+            if (this.props.activePiece === coordinates) {
+                squareClasses.push('isActive');
+            }
 
             if (this.boardState[coordinates] !== null) {
                 squareClasses.push(this.boardState[coordinates].player + ' piece');
