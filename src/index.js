@@ -189,13 +189,20 @@ class ReactCheckers extends React.Component {
         }
 
         if (this.state.moves.indexOf(coordinates) > -1 || jumpArray.indexOf(coordinates) > -1) {
+
+            // King me
+            if (this.shouldKing(movingPiece, coordinates)) {
+                movingPiece.isKing = true;
+            }
+
+            // Move piece to new coordinates
             boardState[this.state.activePiece] = null;
             boardState[coordinates] = movingPiece;
 
+            // Remove opponent piece if jump is made
             let hasJumped = false;
             let newMoves = [];
 
-            // Remove opponent piece if jump is made
             if (jumpArray.indexOf(coordinates) > -1) {
                 let opponentPosition = getKeyByValue(this.state.jumpKills, coordinates);
                 boardState[opponentPosition] = null;
@@ -204,14 +211,7 @@ class ReactCheckers extends React.Component {
                 newMoves = this.getMoves(currentState, coordinates, movingPiece.isKing, true);
             }
 
-            let player = movingPiece.player;
-            let row = getRowAsInt(coordinates);
-
-            if (movingPiece.isKing === false && ( (player === 'player1' && row === 1) || (player === 'player2' && row === 8) ) ) {
-                console.log('let the kinging begin');
-                movingPiece.isKing = true;
-            }
-
+            const player = movingPiece.player;
             let setCurrentPlayer = !currentState.currentPlayer;
             let setActivePiece = null;
 
@@ -234,6 +234,18 @@ class ReactCheckers extends React.Component {
                 stepNumber: this.state.history.length,
             });
         }
+    }
+
+    shouldKing(movingPiece, coordinates) {
+
+        if (movingPiece.isKing === true) {
+            return false;
+        }
+
+        const row = getRowAsInt(coordinates);
+        const player = movingPiece.player;
+
+        return ( (row === 1 && player === 'player1') || (row === 8 && player === 'player2') );
     }
 
     handleClick(coordinates) {
@@ -259,7 +271,7 @@ class ReactCheckers extends React.Component {
             }
 
             // Set active piece
-            let movesData = this.getMoves(currentState, coordinates);
+            let movesData = this.getMoves(currentState, coordinates, clickedSquare.isKing, false);
 
             this.setState({
                 activePiece: coordinates,
@@ -370,6 +382,10 @@ class Board extends React.Component {
 
             if (this.boardState[coordinates] !== null) {
                 squareClasses.push(this.boardState[coordinates].player + ' piece');
+
+                if (this.boardState[coordinates].isKing === true ) {
+                    squareClasses.push('king');
+                }
             }
 
             squareClasses = squareClasses.join(' ');
