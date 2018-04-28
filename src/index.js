@@ -273,6 +273,11 @@ class ReactCheckers extends React.Component {
                 return;
             }
 
+            // Can't choose a new piece if player has already jumped.
+            if (this.state.hasJumped !== null && boardState[coordinates] !== null) {
+                return;
+            }
+
             // Set active piece
             let movesData = this.getMoves(currentState, coordinates, clickedSquare.isKing, false);
 
@@ -303,7 +308,7 @@ class ReactCheckers extends React.Component {
         const currentPlayer = currentState.currentPlayer;
         const moves = this.state.moves;
 
-        // console.log(this.state);
+        console.log(this.state);
 
         return(
             <Board
