@@ -188,52 +188,55 @@ class ReactCheckers extends React.Component {
             jumpArray.push(this.state.jumpKills[key]);
         }
 
-        if (this.state.moves.indexOf(coordinates) > -1 || jumpArray.indexOf(coordinates) > -1) {
-
-            // King me
-            if (this.shouldKing(movingPiece, coordinates)) {
-                movingPiece.isKing = true;
-            }
-
-            // Move piece to new coordinates
-            boardState[this.state.activePiece] = null;
-            boardState[coordinates] = movingPiece;
-
-            // Remove opponent piece if jump is made
-            let hasJumped = false;
-            let newMoves = [];
-
-            if (jumpArray.indexOf(coordinates) > -1) {
-                let opponentPosition = getKeyByValue(this.state.jumpKills, coordinates);
-                boardState[opponentPosition] = null;
-
-                hasJumped = true;
-                newMoves = this.getMoves(currentState, coordinates, movingPiece.isKing, true);
-            }
-
-            const player = movingPiece.player;
-            let setCurrentPlayer = !currentState.currentPlayer;
-            let setActivePiece = null;
-
-            if (hasJumped === true) {
-                if (newMoves[0].length > 0) {
-                    setCurrentPlayer = currentState.currentPlayer;
-                    setActivePiece = coordinates;
-                }
-            }
-
-            this.setState({
-                history: this.state.history.concat([{
-                    boardState: boardState,
-                    currentPlayer: setCurrentPlayer,
-                }]),
-                activePiece: setActivePiece,
-                moves: hasJumped === true ? newMoves[0] : [],
-                jumpKills: hasJumped === true ? newMoves[1] : null,
-                hasJumped: hasJumped === true ? player : null,
-                stepNumber: this.state.history.length,
-            });
+        // Don't move if the coordinates don't match a moveable or jumpable square.
+        if (this.state.moves.indexOf(coordinates) < 0 && jumpArray.indexOf(coordinates) < 0) {
+            return;
         }
+
+        // King me maybe?
+        if (this.shouldKing(movingPiece, coordinates)) {
+            movingPiece.isKing = true;
+        }
+
+        // Move piece to new coordinates
+        boardState[this.state.activePiece] = null;
+        boardState[coordinates] = movingPiece;
+
+        // Remove opponent piece if jump is made
+        let hasJumped = false;
+        let newMoves = [];
+
+        if (jumpArray.indexOf(coordinates) > -1) {
+            let opponentPosition = getKeyByValue(this.state.jumpKills, coordinates);
+            boardState[opponentPosition] = null;
+
+            hasJumped = true;
+            newMoves = this.getMoves(currentState, coordinates, movingPiece.isKing, true);
+        }
+
+        // Update state
+        const player = movingPiece.player;
+        let setCurrentPlayer = !currentState.currentPlayer;
+        let setActivePiece = null;
+
+        if (hasJumped === true) {
+            if (newMoves[0].length > 0) {
+                setCurrentPlayer = currentState.currentPlayer;
+                setActivePiece = coordinates;
+            }
+        }
+
+        this.setState({
+            history: this.state.history.concat([{
+                boardState: boardState,
+                currentPlayer: setCurrentPlayer,
+            }]),
+            activePiece: setActivePiece,
+            moves: hasJumped === true ? newMoves[0] : [],
+            jumpKills: hasJumped === true ? newMoves[1] : null,
+            hasJumped: hasJumped === true ? player : null,
+            stepNumber: this.state.history.length,
+        });
     }
 
     shouldKing(movingPiece, coordinates) {
