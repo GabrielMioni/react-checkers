@@ -203,21 +203,28 @@ class ReactCheckers extends React.Component {
         boardState[coordinates] = movingPiece;
 
         // Remove opponent piece if jump is made
-        let hasJumped = false;
+        const player = movingPiece.player;
+        let hasJumped = null;
         let newMoves = [];
+        let setCurrentPlayer = !currentState.currentPlayer;
+        let setActivePiece = null;
 
         if (jumpArray.indexOf(coordinates) > -1) {
             let opponentPosition = getKeyByValue(this.state.jumpKills, coordinates);
             boardState[opponentPosition] = null;
 
-            hasJumped = true;
             newMoves = this.getMoves(currentState, coordinates, movingPiece.isKing, true);
+
+            if (newMoves[0].length > 0) {
+                hasJumped = true;
+                setCurrentPlayer = currentState.currentPlayer;
+                setActivePiece = coordinates;
+            } else {
+                hasJumped = null;
+            }
         }
 
         // Update state
-        const player = movingPiece.player;
-        let setCurrentPlayer = !currentState.currentPlayer;
-        let setActivePiece = null;
 
         if (hasJumped === true) {
             if (newMoves[0].length > 0) {
