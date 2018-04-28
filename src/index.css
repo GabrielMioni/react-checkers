@@ -17,6 +17,14 @@
     background-color: wheat;
 }
 
+.square.movable.player1-move {
+    background-color: #ff6347;
+}
+
+.square.movable.player2-move {
+    background-color: #7fffd4;
+}
+
 .square.player1, .square.player2, .square.movable {
     cursor: pointer;
 }

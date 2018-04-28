@@ -85,7 +85,6 @@ class ReactCheckers extends React.Component {
     }
 
     getCurrentState() {
-
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
         return history[history.length - 1];
     }
@@ -313,7 +312,6 @@ class Board extends React.Component {
         this.moves = props.moves;
         this.columns = props.columns;
         this.onClick = props.onClick;
-
     }
 
     renderSquare(coordinates, squareClasses) {
@@ -330,7 +328,7 @@ class Board extends React.Component {
         let boardRender = [];
         let columnsRender = [];
 
-        console.log(this.props);
+        let moves = this.props.moves;
 
         for (let coordinates in this.boardState) {
 
@@ -341,20 +339,22 @@ class Board extends React.Component {
             let col = getColAsInt(this.columns, coordinates);
             let row = getRowAsInt(coordinates);
 
-            let currentPlayer = returnPlayerName(this.currentPlayer);
+            let currentPlayer = returnPlayerName(this.props.currentPlayer);
 
-            // let playerMoveClass = currentPlayer + ('-move');
-            let moveToClass = this.moves.indexOf(coordinates) > -1 ? 'movable ' + currentPlayer : '';
             let colorClass  = ( (isOdd(col) && isOdd(row)) || (!isOdd(col) && !(isOdd(row)) ) ) ? 'white' : 'black';
 
             let squareClasses = [];
 
             squareClasses.push(coordinates);
-            squareClasses.push(moveToClass);
             squareClasses.push(colorClass);
 
             if (this.props.activePiece === coordinates) {
                 squareClasses.push('isActive');
+            }
+
+            if (moves.indexOf(coordinates) > -1) {
+                let moveClass = 'movable ' + currentPlayer + '-move';
+                squareClasses.push(moveClass);
             }
 
             if (this.boardState[coordinates] !== null) {
