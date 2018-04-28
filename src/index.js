@@ -111,7 +111,7 @@ class ReactCheckers extends React.Component {
 
     }
 
-    getMoves(currentState, coordinates, isKing = false) {
+    getMoves(currentState, coordinates, isKing = false, hasJumped = false) {
 
         let moves = [];
         let jumps = [];
@@ -160,7 +160,13 @@ class ReactCheckers extends React.Component {
             }
         }
 
-        let movesOut = moves.concat(jumps);
+        let movesOut;
+
+        if (hasJumped === false) {
+            movesOut = moves.concat(jumps);
+        } else {
+            movesOut = jumps;
+        }
 
         let killJumpsOut = jumps.length > 0 ? killJumps : null;
 
@@ -192,8 +198,8 @@ class ReactCheckers extends React.Component {
             if (jumpArray.indexOf(coordinates) > -1) {
                 let opponentPosition = getKeyByValue(this.state.jumpKills, coordinates);
                 boardState[opponentPosition] = null;
-                hasJumped = true;
-                newMoves = this.getMoves(currentState, coordinates, movingPiece.isKing);
+
+                newMoves = this.getMoves(currentState, coordinates, movingPiece.isKing, true);
             }
 
             let player = movingPiece.player;
