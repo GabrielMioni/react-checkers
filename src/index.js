@@ -195,10 +195,12 @@ class ReactCheckers extends React.Component {
             let hasJumped = false;
             let newMoves = [];
 
+            // Remove opponent piece if jump is made
             if (jumpArray.indexOf(coordinates) > -1) {
                 let opponentPosition = getKeyByValue(this.state.jumpKills, coordinates);
                 boardState[opponentPosition] = null;
 
+                hasJumped = true;
                 newMoves = this.getMoves(currentState, coordinates, movingPiece.isKing, true);
             }
 
@@ -206,6 +208,7 @@ class ReactCheckers extends React.Component {
             let row = getRowAsInt(coordinates);
 
             if (movingPiece.isKing === false && ( (player === 'player1' && row === 1) || (player === 'player2' && row === 8) ) ) {
+                console.log('let the kinging begin');
                 movingPiece.isKing = true;
             }
 
@@ -246,9 +249,11 @@ class ReactCheckers extends React.Component {
             }
 
             // Unset active piece if it's clicked
-            if (this.state.activePiece === coordinates) {
+            if (this.state.activePiece === coordinates && this.state.hasJumped === null) {
                 this.setState({
                     activePiece: null,
+                    moves: [],
+                    jumpKills: null,
                 });
                 return;
             }
