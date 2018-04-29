@@ -118,13 +118,13 @@ class ReactCheckers extends React.Component {
 
         let killJumps = {};
 
+        const boardState = currentState.boardState;
         const corners = this.getCorners(coordinates);
 
         const row = getRowAsInt(coordinates);
-        const player = returnPlayerName(currentState.currentPlayer);
+        const player = boardState[coordinates].player;
 
         const advanceRow = player === 'player1' ? row - 1 : row + 1;
-        const boardState = currentState.boardState;
 
         for (let key in corners) {
             if (!corners.hasOwnProperty(key)) {
@@ -243,6 +243,7 @@ class ReactCheckers extends React.Component {
             jumpKills: hasJumped === true ? newMoves[1] : null,
             hasJumped: hasJumped === true ? player : null,
             stepNumber: this.state.history.length,
+            winner: this.evaluateWinner(),
         });
     }
 
@@ -258,7 +259,59 @@ class ReactCheckers extends React.Component {
         return ( (row === 1 && player === 'player1') || (row === 8 && player === 'player2') );
     }
 
+    evaluateWinner() {
+        const currentState = this.getCurrentState();
+        const boardState = currentState.boardState;
+
+        let player1Pieces = 0;
+        let player1Moves  = 0;
+
+        let player2Pieces = 0;
+        let player2Moves  = 0;
+
+        for (let coordinates in boardState) {
+            if (!boardState.hasOwnProperty(coordinates) || boardState[coordinates] === null) {
+                continue;
+            }
+
+            const movesData = this.getMoves(currentState, coordinates, boardState[coordinates].isKing, false);
+            const moveCount = movesData[0].length;
+
+            if (boardState[coordinates].player === 'player1') {
+                ++player1Pieces;
+                player1Moves += moveCount;
+
+            } else {
+                ++player2Pieces;
+                player2Moves += moveCount;
+            }
+        }
+
+        if (player1Pieces === 0 ) {
+            return 'player2pieces';
+        }
+
+        if (player2Pieces === 0 ) {
+            return 'player1pieces';
+        }
+
+        if (player1Moves === 0) {
+            return 'player2moves';
+        }
+
+        if (player2Moves === 0) {
+            return 'player1moves';
+        }
+
+        return null;
+    }
+
     handleClick(coordinates) {
+
+        if (this.state.winner !== null) {
+            return;
+        }
+
         const currentState = this.getCurrentState();
         const boardState = currentState.boardState;
         const clickedSquare = boardState[coordinates];
