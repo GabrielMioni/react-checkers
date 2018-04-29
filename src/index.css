@@ -1,3 +1,31 @@
+#root {
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    padding-top: 20px;
+}
+
+.game-status {
+    display: inline-block;
+    padding: 5px;
+    background-color: #fff;
+    border: 5px solid burlywood;
+    width: 55%;
+    font-family: 'Comfortaa', cursive;
+    font-size: 30px;
+    position: relative;
+    top: 15px;
+    z-index: 3;
+}
+
+.game-board {
+    display: inline-block;
+    border: 10px solid #008b8b;
+    position: relative;
+}
+
 .board-col {
     display: inline-block;
     max-width: 80px;

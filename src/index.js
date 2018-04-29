@@ -361,24 +361,51 @@ class ReactCheckers extends React.Component {
 
     render() {
         const columns = this.columns;
-        const history = this.state.history;
+        const stateHistory = this.state.history;
         const activePiece = this.state.activePiece;
-        const currentState = history[this.state.stepNumber];
+        const currentState = stateHistory[this.state.stepNumber];
         const boardState = currentState.boardState;
         const currentPlayer = currentState.currentPlayer;
         const moves = this.state.moves;
 
+        let gameStatus;
+
+        switch (this.state.winner) {
+            case 'player1pieces':
+                gameStatus = 'Player One Wins!';
+                break;
+            case 'player2pieces':
+                gameStatus = 'Player Two Wins!';
+                break;
+            case 'player1moves':
+                gameStatus = 'No moves left - Player One Wins!';
+                break;
+            case 'player2moves':
+                gameStatus = 'No moves left - Player Two Wins!';
+                break;
+            default:
+                gameStatus = currentState.currentPlayer === true ? 'Player One' : 'Player Two';
+                break;
+        }
+
         console.log(this.state);
 
         return(
-            <Board
-                boardState = {boardState}
-                currentPlayer = {currentPlayer}
-                activePiece = {activePiece}
-                moves = {moves}
-                columns = {columns}
-                onClick = {(coordinates) => this.handleClick(coordinates)}
-            />
+            <div className="reactCheckers">
+                <div className="game-status">
+                    {gameStatus}
+                </div>
+                <div className="game-board">
+                    <Board
+                        boardState = {boardState}
+                        currentPlayer = {currentPlayer}
+                        activePiece = {activePiece}
+                        moves = {moves}
+                        columns = {columns}
+                        onClick = {(coordinates) => this.handleClick(coordinates)}
+                    />
+                </div>
+            </div>
         );
     }
 }
