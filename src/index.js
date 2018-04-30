@@ -111,14 +111,14 @@ class ReactCheckers extends React.Component {
 
     }
 
-    getMoves(currentState, coordinates, isKing = false, hasJumped = false) {
+    getMoves(boardState, coordinates, isKing = false, hasJumped = false) {
 
         let moves = [];
         let jumps = [];
 
         let killJumps = {};
 
-        const boardState = currentState.boardState;
+        //const boardState = currentState.boardState;
         const corners = this.getCorners(coordinates);
 
         const row = getRowAsInt(coordinates);
@@ -174,9 +174,11 @@ class ReactCheckers extends React.Component {
 
     }
 
-    movePiece(currentState, coordinates) {
-        let boardState = currentState.boardState;
-        let movingPiece = Object.assign({}, boardState[this.state.activePiece]);
+    movePiece(coordinates) {
+
+        const currentState = Object.assign({}, this.state.history[this.state.history.length -1]);
+        const mostRecentBoardState = Object.assign({}, currentState.boardState);
+        const movingPiece = Object.assign({}, mostRecentBoardState[this.state.activePiece]);
 
         let jumpArray = [];
 
@@ -199,43 +201,41 @@ class ReactCheckers extends React.Component {
         }
 
         // Move piece to new coordinates
-        boardState[this.state.activePiece] = null;
-        boardState[coordinates] = movingPiece;
+        mostRecentBoardState[this.state.activePiece] = null;
+        mostRecentBoardState[coordinates] = movingPiece;
 
         // Remove opponent piece if jump is made
         const player = movingPiece.player;
         let hasJumped = null;
         let newMoves = [];
-        let setCurrentPlayer = !currentState.currentPlayer;
+        let setCurrentPlayer = player === 'player2';
         let setActivePiece = null;
 
         if (jumpArray.indexOf(coordinates) > -1) {
             let opponentPosition = getKeyByValue(this.state.jumpKills, coordinates);
-            boardState[opponentPosition] = null;
+            mostRecentBoardState[opponentPosition] = null;
 
-            newMoves = this.getMoves(currentState, coordinates, movingPiece.isKing, true);
+            newMoves = this.getMoves(mostRecentBoardState, coordinates, movingPiece.isKing, true);
 
             if (newMoves[0].length > 0) {
                 hasJumped = true;
-                setCurrentPlayer = currentState.currentPlayer;
+                setCurrentPlayer = mostRecentBoardState.currentPlayer;
                 setActivePiece = coordinates;
             } else {
                 hasJumped = null;
             }
         }
 
-        // Update state
-
         if (hasJumped === true) {
             if (newMoves[0].length > 0) {
-                setCurrentPlayer = currentState.currentPlayer;
+                setCurrentPlayer = mostRecentBoardState.currentPlayer;
                 setActivePiece = coordinates;
             }
         }
 
         this.setState({
             history: this.state.history.concat([{
-                boardState: boardState,
+                boardState: mostRecentBoardState,
                 currentPlayer: setCurrentPlayer,
             }]),
             activePiece: setActivePiece,
@@ -274,7 +274,7 @@ class ReactCheckers extends React.Component {
                 continue;
             }
 
-            const movesData = this.getMoves(currentState, coordinates, boardState[coordinates].isKing, false);
+            const movesData = this.getMoves(boardState, coordinates, boardState[coordinates].isKing, false);
             const moveCount = movesData[0].length;
 
             if (boardState[coordinates].player === 'player1') {
@@ -326,6 +326,7 @@ class ReactCheckers extends React.Component {
             // Unset active piece if it's clicked
             if (this.state.activePiece === coordinates && this.state.hasJumped === null) {
                 this.setState({
+                    history: this.state.history,
                     activePiece: null,
                     moves: [],
                     jumpKills: null,
@@ -339,9 +340,10 @@ class ReactCheckers extends React.Component {
             }
 
             // Set active piece
-            let movesData = this.getMoves(currentState, coordinates, clickedSquare.isKing, false);
+            let movesData = this.getMoves(boardState, coordinates, clickedSquare.isKing, false);
 
             this.setState({
+                history: this.state.history,
                 activePiece: coordinates,
                 moves: movesData[0],
                 jumpKills: movesData[1],
@@ -355,15 +357,16 @@ class ReactCheckers extends React.Component {
         }
 
         if (this.state.moves.length > 0) {
-            this.movePiece(currentState, coordinates);
+            this.movePiece(coordinates);
         }
     }
 
     render() {
+
         const columns = this.columns;
         const stateHistory = this.state.history;
         const activePiece = this.state.activePiece;
-        const currentState = stateHistory[this.state.stepNumber];
+        const currentState = stateHistory[this.state.history.length -1];
         const boardState = currentState.boardState;
         const currentPlayer = currentState.currentPlayer;
         const moves = this.state.moves;
@@ -448,9 +451,9 @@ class Board extends React.Component {
 
         let moves = this.props.moves;
 
-        for (let coordinates in this.boardState) {
+        for (let coordinates in this.props.boardState) {
 
-            if (!this.boardState.hasOwnProperty(coordinates)) {
+            if (!this.props.boardState.hasOwnProperty(coordinates)) {
                 continue;
             }
 
@@ -475,17 +478,17 @@ class Board extends React.Component {
                 squareClasses.push(moveClass);
             }
 
-            if (this.boardState[coordinates] !== null) {
-                squareClasses.push(this.boardState[coordinates].player + ' piece');
+            if (this.props.boardState[coordinates] !== null) {
+                squareClasses.push(this.props.boardState[coordinates].player + ' piece');
 
-                if (this.boardState[coordinates].isKing === true ) {
+                if (this.props.boardState[coordinates].isKing === true ) {
                     squareClasses.push('king');
                 }
             }
 
             squareClasses = squareClasses.join(' ');
 
-            columnsRender.push(this.renderSquare(coordinates, squareClasses, this.boardState[coordinates]));
+            columnsRender.push(this.renderSquare(coordinates, squareClasses, this.props.boardState[coordinates]));
 
             if (columnsRender.length >= 8) {
                 columnsRender = columnsRender.reverse();
