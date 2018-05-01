@@ -369,6 +369,10 @@ class ReactCheckers extends React.Component {
         const unsetHistory = this.state.history.slice(0, backStep+1);
         this.setState({
             history: unsetHistory,
+            activePiece: null,
+            moves: [],
+            jumpKills: null,
+            hasJumped: null,
             stepNumber: backStep,
         });
     }
