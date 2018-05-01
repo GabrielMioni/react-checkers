@@ -1,6 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Router } from 'react-router-dom'
+import createBrowserHistory from 'history/createBrowserHistory'
 import './index.css';
+
+const browserHistory = createBrowserHistory();
 
 class ReactCheckers extends React.Component {
 
@@ -178,8 +182,6 @@ class ReactCheckers extends React.Component {
     }
 
     movePiece(coordinates) {
-
-//        const currentState = Object.assign({}, this.state.history[this.state.history.length -1]);
         const currentState = Object.assign({}, this.state.history[this.state.stepNumber]);
         let mostRecentBoardState = Object.assign({}, currentState.boardState);
         let movingPiece = Object.assign({}, mostRecentBoardState[this.state.activePiece]);
@@ -417,24 +419,26 @@ class ReactCheckers extends React.Component {
         console.log(this.state);
 
         return(
-            <div className="reactCheckers">
-                <div className="game-status">
-                    {gameStatus}
+            <Router history={browserHistory} basename={'react-checkers'} >
+                <div className="reactCheckers">
+                    <div className="game-status">
+                        {gameStatus}
+                    </div>
+                    <div className="game-board">
+                        <Board
+                            boardState = {boardState}
+                            currentPlayer = {currentPlayer}
+                            activePiece = {activePiece}
+                            moves = {moves}
+                            columns = {columns}
+                            onClick = {(coordinates) => this.handleClick(coordinates)}
+                        />
+                    </div>
+                    <div className="time-travel">
+                        <button className={undoClass} onClick={()=>this.undo()}>Undo</button>
+                    </div>
                 </div>
-                <div className="game-board">
-                    <Board
-                        boardState = {boardState}
-                        currentPlayer = {currentPlayer}
-                        activePiece = {activePiece}
-                        moves = {moves}
-                        columns = {columns}
-                        onClick = {(coordinates) => this.handleClick(coordinates)}
-                    />
-                </div>
-                <div className="time-travel">
-                    <button className={undoClass} onClick={()=>this.undo()}>Undo</button>
-                </div>
-            </div>
+            </Router>
         );
     }
 }
