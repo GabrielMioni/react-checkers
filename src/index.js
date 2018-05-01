@@ -374,6 +374,7 @@ class ReactCheckers extends React.Component {
             jumpKills: null,
             hasJumped: null,
             stepNumber: backStep,
+            winner: null,
         });
     }
 
