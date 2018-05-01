@@ -5,25 +5,50 @@
     justify-content: center;
     text-align: center;
     padding-top: 20px;
-}
-
-.game-status {
-    display: inline-block;
-    padding: 5px;
-    background-color: #fff;
-    border: 5px solid burlywood;
-    width: 55%;
     font-family: 'Comfortaa', cursive;
-    font-size: 30px;
-    position: relative;
-    top: 15px;
-    z-index: 3;
 }
 
 .game-board {
     display: inline-block;
     border: 10px solid #008b8b;
     position: relative;
+}
+
+.game-status {
+    display: block;
+    padding: 5px;
+    background-color: #fff;
+    border: 5px solid #deb887;
+    width: 55%;
+    max-width: 500px;
+    font-size: 30px;
+    position: relative;
+    top: 15px;
+    z-index: 3;
+    margin: 0 auto;
+}
+
+.time-travel {
+    max-width: 660px;
+    display: block;
+    margin: 0 auto;
+    text-align: right;
+}
+
+.undo {
+    font-size: 15px;
+    padding: 5px;
+    border-radius: 0;
+    background-color: #fff;
+    box-shadow: none;
+    border: 3px solid #deb887;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.undo.disabled {
+    cursor: not-allowed;
+    opacity: .4;
 }
 
 .board-col {
@@ -72,4 +97,48 @@
 }
 .square.player2.king {
     background-image: url("img/blue-king.png");
+}
+
+@media only screen and (max-width: 700px) {
+
+    .board-col {
+        max-width: 60px;
+    }
+    .square {
+        height: 60px;
+        width: 60px;
+    }
+}
+
+@media only screen and (max-width: 520px) {
+
+    .board-col {
+        max-width: 50px;
+    }
+    .square {
+        height: 50px;
+        width: 50px;
+    }
+}
+
+@media only screen and (max-width: 440px) {
+
+    .board-col {
+        max-width: 40px;
+    }
+    .square {
+        height: 40px;
+        width: 40px;
+    }
+}
+
+@media only screen and (max-width: 370px) {
+
+    .board-col {
+        max-width: 35px;
+    }
+    .square {
+        height: 35px;
+        width: 35px;
+    }
 }

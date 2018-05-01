@@ -113,12 +113,15 @@ class ReactCheckers extends React.Component {
 
     getMoves(boardState, coordinates, isKing = false, hasJumped = false) {
 
+        if (boardState[coordinates] === null) {
+            return [];
+        }
+
         let moves = [];
         let jumps = [];
 
         let killJumps = {};
 
-        //const boardState = currentState.boardState;
         const corners = this.getCorners(coordinates);
 
         const row = getRowAsInt(coordinates);
@@ -176,9 +179,10 @@ class ReactCheckers extends React.Component {
 
     movePiece(coordinates) {
 
-        const currentState = Object.assign({}, this.state.history[this.state.history.length -1]);
-        const mostRecentBoardState = Object.assign({}, currentState.boardState);
-        const movingPiece = Object.assign({}, mostRecentBoardState[this.state.activePiece]);
+//        const currentState = Object.assign({}, this.state.history[this.state.history.length -1]);
+        const currentState = Object.assign({}, this.state.history[this.state.stepNumber]);
+        let mostRecentBoardState = Object.assign({}, currentState.boardState);
+        let movingPiece = Object.assign({}, mostRecentBoardState[this.state.activePiece]);
 
         let jumpArray = [];
 
@@ -357,17 +361,35 @@ class ReactCheckers extends React.Component {
         }
     }
 
+    undo() {
+        const backStep = parseInt(this.state.stepNumber, 10) -1;
+        if (backStep < 0) {
+            return;
+        }
+        const unsetHistory = this.state.history.slice(0, backStep+1);
+        this.setState({
+            history: unsetHistory,
+            stepNumber: backStep,
+        });
+    }
+
     render() {
 
         const columns = this.columns;
         const stateHistory = this.state.history;
         const activePiece = this.state.activePiece;
-        const currentState = stateHistory[this.state.history.length -1];
+        const currentState = stateHistory[this.state.stepNumber];
         const boardState = currentState.boardState;
         const currentPlayer = currentState.currentPlayer;
         const moves = this.state.moves;
 
         let gameStatus;
+
+        let undoClass = 'undo';
+
+        if (this.state.stepNumber < 1) {
+            undoClass += ' disabled';
+        }
 
         switch (this.state.winner) {
             case 'player1pieces':
@@ -404,6 +426,9 @@ class ReactCheckers extends React.Component {
                         onClick = {(coordinates) => this.handleClick(coordinates)}
                     />
                 </div>
+                <div className="time-travel">
+                    <button className={undoClass} onClick={()=>this.undo()}>Undo</button>
+                </div>
             </div>
         );
     }
@@ -420,9 +445,6 @@ function Square(props) {
 }
 
 class Board extends React.Component {
-    constructor(props) {
-        super(props);
-    }
 
     renderSquare(coordinates, squareClasses) {
         return (
