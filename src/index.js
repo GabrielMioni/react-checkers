@@ -243,7 +243,7 @@ class ReactCheckers extends React.Component {
             jumpKills: hasJumped === true ? newMoves[1] : null,
             hasJumped: hasJumped === true ? player : null,
             stepNumber: this.state.history.length,
-            winner: this.evaluateWinner(),
+            winner: this.evaluateWinner(mostRecentBoardState),
         });
     }
 
@@ -259,9 +259,7 @@ class ReactCheckers extends React.Component {
         return ( (row === 1 && player === 'player1') || (row === 8 && player === 'player2') );
     }
 
-    evaluateWinner() {
-        const currentState = this.getCurrentState();
-        const boardState = currentState.boardState;
+    evaluateWinner(boardState) {
 
         let player1Pieces = 0;
         let player1Moves  = 0;
@@ -326,7 +324,6 @@ class ReactCheckers extends React.Component {
             // Unset active piece if it's clicked
             if (this.state.activePiece === coordinates && this.state.hasJumped === null) {
                 this.setState({
-                    history: this.state.history,
                     activePiece: null,
                     moves: [],
                     jumpKills: null,
@@ -343,7 +340,6 @@ class ReactCheckers extends React.Component {
             let movesData = this.getMoves(boardState, coordinates, clickedSquare.isKing, false);
 
             this.setState({
-                history: this.state.history,
                 activePiece: coordinates,
                 moves: movesData[0],
                 jumpKills: movesData[1],
@@ -426,13 +422,6 @@ function Square(props) {
 class Board extends React.Component {
     constructor(props) {
         super(props);
-
-        this.boardState = props.boardState;
-        this.activePiece = props.activePiece;
-        this.currentPlayer = props.currentPlayer;
-        this.moves = props.moves;
-        this.columns = props.columns;
-        this.onClick = props.onClick;
     }
 
     renderSquare(coordinates, squareClasses) {
@@ -440,7 +429,7 @@ class Board extends React.Component {
             <Square
                 key = {coordinates}
                 squareClasses = {squareClasses}
-                onClick = {() => this.onClick(coordinates) }
+                onClick = {() => this.props.onClick(coordinates) }
             />
         );
     }
@@ -457,7 +446,7 @@ class Board extends React.Component {
                 continue;
             }
 
-            let col = getColAsInt(this.columns, coordinates);
+            let col = getColAsInt(this.props.columns, coordinates);
             let row = getRowAsInt(coordinates);
 
             let currentPlayer = returnPlayerName(this.props.currentPlayer);
