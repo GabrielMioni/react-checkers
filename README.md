@@ -1,6 +1,6 @@
 # React Checkers
 
-Playable version here: [https://www.gabrielmioni.com/react-checkers/](https://www.gabrielmioni.com/react-checkers/)
+Playable version here: [http://www.gabrielmioni.com/react-checkers/](http://www.gabrielmioni.com/react-checkers/)
 
 This is a 2 player checkers game built in React.js:
 
