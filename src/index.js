@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import * as utils from './utils.js';
+import Board from './Board.js';
 import { Router } from 'react-router-dom'
 import createBrowserHistory from 'history/createBrowserHistory'
 import './index.css';
@@ -95,11 +97,11 @@ class ReactCheckers extends React.Component {
 
     getCorners(coordinates) {
 
-        const col = getColAsInt(this.columns, coordinates);
-        const row = getRowAsInt(coordinates);
+        const col = utils.getColAsInt(this.columns, coordinates);
+        const row = utils.getRowAsInt(coordinates);
 
-        const columnLeft  = col -1 >= 0 ? getColAsAlph(this.columns, col - 1) : false;
-        const columnRight = col +1 <= 7 ? getColAsAlph(this.columns, col + 1) : false;
+        const columnLeft  = col -1 >= 0 ? utils.getColAsAlph(this.columns, col - 1) : false;
+        const columnRight = col +1 <= 7 ? utils.getColAsAlph(this.columns, col + 1) : false;
 
         const rowUpper = row +1 < 9 ? row +1 : false;
         const rowLower = row -1 > 0 ? row -1 : false;
@@ -128,7 +130,7 @@ class ReactCheckers extends React.Component {
 
         const corners = this.getCorners(coordinates);
 
-        const row = getRowAsInt(coordinates);
+        const row = utils.getRowAsInt(coordinates);
         const player = boardState[coordinates].player;
 
         const advanceRow = player === 'player1' ? row - 1 : row + 1;
@@ -218,7 +220,7 @@ class ReactCheckers extends React.Component {
         let setActivePiece = null;
 
         if (jumpArray.indexOf(coordinates) > -1) {
-            let opponentPosition = getKeyByValue(this.state.jumpKills, coordinates);
+            let opponentPosition = utils.getKeyByValue(this.state.jumpKills, coordinates);
             mostRecentBoardState[opponentPosition] = null;
 
             newMoves = this.getMoves(mostRecentBoardState, coordinates, movingPiece.isKing, true);
@@ -259,7 +261,7 @@ class ReactCheckers extends React.Component {
             return false;
         }
 
-        const row = getRowAsInt(coordinates);
+        const row = utils.getRowAsInt(coordinates);
         const player = movingPiece.player;
 
         return ( (row === 1 && player === 'player1') || (row === 8 && player === 'player2') );
@@ -323,7 +325,7 @@ class ReactCheckers extends React.Component {
         if (clickedSquare !== null) {
 
             // Can't select opponents pieces
-            if (clickedSquare.player !== returnPlayerName(currentState.currentPlayer)) {
+            if (clickedSquare.player !== utils.returnPlayerName(currentState.currentPlayer)) {
                 return;
             }
 
@@ -416,8 +418,6 @@ class ReactCheckers extends React.Component {
                 break;
         }
 
-        console.log(this.state);
-
         return(
             <Router history={browserHistory} basename={'react-checkers'} >
                 <div className="reactCheckers">
@@ -443,122 +443,9 @@ class ReactCheckers extends React.Component {
     }
 }
 
-function Square(props) {
-
-    const squareClasses = props['squareClasses'];
-    const onClick = props['onClick'];
-
-    return (
-        <button className = { "square " + (squareClasses) } onClick={onClick} />
-    );
-}
-
-class Board extends React.Component {
-
-    renderSquare(coordinates, squareClasses) {
-        return (
-            <Square
-                key = {coordinates}
-                squareClasses = {squareClasses}
-                onClick = {() => this.props.onClick(coordinates) }
-            />
-        );
-    }
-
-    render() {
-        let boardRender = [];
-        let columnsRender = [];
-
-        let moves = this.props.moves;
-
-        for (let coordinates in this.props.boardState) {
-
-            if (!this.props.boardState.hasOwnProperty(coordinates)) {
-                continue;
-            }
-
-            let col = getColAsInt(this.props.columns, coordinates);
-            let row = getRowAsInt(coordinates);
-
-            let currentPlayer = returnPlayerName(this.props.currentPlayer);
-
-            let colorClass  = ( (isOdd(col) && isOdd(row)) || (!isOdd(col) && !(isOdd(row)) ) ) ? 'white' : 'black';
-
-            let squareClasses = [];
-
-            squareClasses.push(coordinates);
-            squareClasses.push(colorClass);
-
-            if (this.props.activePiece === coordinates) {
-                squareClasses.push('isActive');
-            }
-
-            if (moves.indexOf(coordinates) > -1) {
-                let moveClass = 'movable ' + currentPlayer + '-move';
-                squareClasses.push(moveClass);
-            }
-
-            if (this.props.boardState[coordinates] !== null) {
-                squareClasses.push(this.props.boardState[coordinates].player + ' piece');
-
-                if (this.props.boardState[coordinates].isKing === true ) {
-                    squareClasses.push('king');
-                }
-            }
-
-            squareClasses = squareClasses.join(' ');
-
-            columnsRender.push(this.renderSquare(coordinates, squareClasses, this.props.boardState[coordinates]));
-
-            if (columnsRender.length >= 8) {
-                columnsRender = columnsRender.reverse();
-                boardRender.push(<div key={boardRender.length} className="board-col">{columnsRender}</div>);
-                columnsRender = [];
-            }
-        }
-
-        return (boardRender);
-    }
-}
-
 // ========================================
 
 ReactDOM.render(
     <ReactCheckers />,
     document.getElementById('root')
 );
-
-function isOdd(n) {
-    return Math.abs(n % 2) === 1;
-}
-
-function getKeyByValue(object, value) {
-    return Object.keys(object).find(key => object[key] === value);
-}
-
-function getColAsInt(columns, coordinate) {
-    return columns[coordinate.charAt(0)];
-}
-
-function getColAsAlph(columns, columnInt) {
-
-    for (let key in columns) {
-        if (!columns.hasOwnProperty(key)) {
-            continue;
-        }
-
-        if (columnInt === columns[key]) {
-            return key;
-        }
-    }
-
-    return false;
-}
-
-function getRowAsInt(coordinate) {
-    return parseInt(coordinate.charAt(1), 10);
-}
-
-function returnPlayerName(playerBool) {
-    return playerBool === true ? 'player1' : 'player2';
-}
