@@ -60,12 +60,9 @@ export class ReactCheckers {
                 continue;
             }
 
-            console.log(boardState[cornerCoordinates]);
-
             if (boardState[cornerCoordinates] === null) {
                 moves.push(cornerCoordinates);
             } else {
-                console.log(cornerCoordinates);
                 let neighborPiece = boardState[cornerCoordinates];
 
                 if (neighborPiece.player === player) {
@@ -97,8 +94,6 @@ export class ReactCheckers {
     }
 
     movePiece(coordinates, state) {
-        console.log('state', state);
-
         let currentState  = Object.assign({}, state.history[state.stepNumber]);
         let boardState = Object.assign({}, currentState.boardState);
         let movingPiece = Object.assign({}, boardState[state.activePiece]);
@@ -157,12 +152,7 @@ export class ReactCheckers {
         }
 
         let stateOut = {};
-        //let history = {};
 
-        //history.boardState = boardState;
-        //history.currentPlayer = setCurrentPlayer;
-
-        //stateOut.history = history;
         stateOut.boardState = boardState;
         stateOut.currentPlayer = setCurrentPlayer;
         stateOut.activePiece = setActivePiece;
@@ -170,9 +160,6 @@ export class ReactCheckers {
         stateOut.jumpKills = hasJumped === true ? newMoves[1] : null;
         stateOut.hasJumped = hasJumped === true ? player : null;
         stateOut.winner = this.evaluateWinner(boardState);
-        stateOut.winner = null;
-
-        console.log(stateOut);
 
         return stateOut;
     }
