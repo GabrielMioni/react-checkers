@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import * as utils from './utils.js';
+import {returnPlayerName} from './utils.js';
 import {ReactCheckers} from './ReactCheckers.js';
 import Board from './Board.js';
 import { Router } from 'react-router-dom'
@@ -112,7 +112,7 @@ class Game extends React.Component {
         if (clickedSquare !== null) {
 
             // Can't select opponents pieces
-            if (clickedSquare.player !== utils.returnPlayerName(currentState.currentPlayer)) {
+            if (clickedSquare.player !== returnPlayerName(currentState.currentPlayer)) {
                 return;
             }
 
