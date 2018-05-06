@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as utils from './utils.js';
+import {ReactCheckers} from './ReactCheckers.js';
 import Board from './Board.js';
 import { Router } from 'react-router-dom'
 import createBrowserHistory from 'history/createBrowserHistory'
@@ -8,12 +9,14 @@ import './index.css';
 
 const browserHistory = createBrowserHistory();
 
-class ReactCheckers extends React.Component {
+class Game extends React.Component {
 
     constructor(props) {
         super(props);
 
         this.columns = this.setColumns();
+
+        this.ReactCheckers = new ReactCheckers(this.columns);
 
         this.state = {
             history: [{
@@ -345,7 +348,8 @@ class ReactCheckers extends React.Component {
             }
 
             // Set active piece
-            let movesData = this.getMoves(boardState, coordinates, clickedSquare.isKing, false);
+            //let movesData = this.getMoves(boardState, coordinates, clickedSquare.isKing, false);
+            let movesData = this.ReactCheckers.getMoves(boardState, coordinates, clickedSquare.isKing, false);
 
             this.setState({
                 activePiece: coordinates,
@@ -361,7 +365,22 @@ class ReactCheckers extends React.Component {
         }
 
         if (this.state.moves.length > 0) {
-            this.movePiece(coordinates);
+            //this.movePiece(coordinates);
+
+            const postMoveState = this.ReactCheckers.movePiece(coordinates, this.state);
+
+            this.setState({
+                history: this.state.history.concat([{
+                    boardState: postMoveState.boardState,
+                    currentPlayer: postMoveState.currentPlayer,
+                }]),
+                activePiece: postMoveState.activePiece,
+                moves: postMoveState.moves,
+                jumpKills: postMoveState.jumpKills,
+                hasJumped: postMoveState.hasJumped,
+                stepNumber: this.state.history.length,
+                winner: postMoveState.winner,
+            });
         }
     }
 
@@ -383,6 +402,8 @@ class ReactCheckers extends React.Component {
     }
 
     render() {
+
+        console.log(this.state);
 
         const columns = this.columns;
         const stateHistory = this.state.history;
@@ -446,6 +467,6 @@ class ReactCheckers extends React.Component {
 // ========================================
 
 ReactDOM.render(
-    <ReactCheckers />,
+    <Game />,
     document.getElementById('root')
 );
