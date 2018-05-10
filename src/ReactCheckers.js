@@ -84,6 +84,7 @@ export class ReactCheckers {
         if (hasJumped === false) {
             movesOut = moves.concat(jumps);
         } else {
+            // If the piece has already jumped, only additional jumps are available
             movesOut = jumps;
         }
 
@@ -110,7 +111,7 @@ export class ReactCheckers {
 
         // Don't move if the coordinates don't match a moveable or jumpable square.
         if (state.moves.indexOf(coordinates) < 0 && jumpArray.indexOf(coordinates) < 0) {
-            return;
+            return null;
         }
 
         // King me maybe?
