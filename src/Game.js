@@ -247,8 +247,6 @@ export class Game extends React.Component {
     }
 
     render() {
-        console.log(this.state.players);
-
         const columns = this.columns;
         const stateHistory = this.state.history;
         const activePiece = this.state.activePiece;
