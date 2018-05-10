@@ -4,6 +4,7 @@ import {ReactCheckers} from './ReactCheckers.js';
 import Board from './Board.js';
 import { Router } from 'react-router-dom'
 import createBrowserHistory from 'history/createBrowserHistory'
+import {Opponent} from './Opponent.js';
 
 const browserHistory = createBrowserHistory();
 
@@ -15,8 +16,10 @@ export class Game extends React.Component {
         this.columns = this.setColumns();
 
         this.ReactCheckers = new ReactCheckers(this.columns);
+        this.Opponent = new Opponent(this.columns);
 
         this.state = {
+            players: null,
             history: [{
                 boardState: this.createBoard(),
                 currentPlayer: true,
@@ -150,19 +153,74 @@ export class Game extends React.Component {
         if (this.state.moves.length > 0) {
             const postMoveState = this.ReactCheckers.movePiece(coordinates, this.state);
 
-            this.setState({
-                history: this.state.history.concat([{
-                    boardState: postMoveState.boardState,
-                    currentPlayer: postMoveState.currentPlayer,
-                }]),
-                activePiece: postMoveState.activePiece,
-                moves: postMoveState.moves,
-                jumpKills: postMoveState.jumpKills,
-                hasJumped: postMoveState.hasJumped,
-                stepNumber: this.state.history.length,
-                winner: postMoveState.winner,
-            });
+            if (postMoveState === null) {
+                return;
+            }
+
+            this.updateStatePostMove(postMoveState);
+
+            // Start computer move is the player is finished
+            if (postMoveState.currentPlayer === false && postMoveState.winner === null) {
+                this.computerTurn();
+            }
         }
+    }
+
+    computerTurn() {
+        if (this.state.players < 2) {
+            return;
+        }
+
+        setTimeout(()=> {
+            const currentState = this.getCurrentState();
+            const boardState = currentState.boardState;
+
+            const computerMove = this.Opponent.getRandomMove(boardState, 'player2');
+            const coordinates = computerMove.piece;
+            const moveTo = computerMove.moveTo;
+
+            const clickedSquare = boardState[coordinates];
+
+            let movesData = this.ReactCheckers.getMoves(boardState, coordinates, clickedSquare.isKing, false);
+
+            this.setState({
+                activePiece: coordinates,
+                moves: movesData[0],
+                jumpKills: movesData[1],
+            });
+
+            setTimeout(()=> {
+                const postMoveState = this.ReactCheckers.movePiece(moveTo, this.state);
+
+                if (postMoveState === null) {
+                    return;
+                }
+
+                this.updateStatePostMove(postMoveState);
+            },
+            500);
+        },
+        1000);
+
+        // Check if it's still the computer player's turn
+        if (this.state.history[this.state.history.length-1].currentPlayer === false) {
+            this.computerTurn();
+        }
+    }
+
+    updateStatePostMove(postMoveState) {
+        this.setState({
+            history: this.state.history.concat([{
+                boardState: postMoveState.boardState,
+                currentPlayer: postMoveState.currentPlayer,
+            }]),
+            activePiece: postMoveState.activePiece,
+            moves: postMoveState.moves,
+            jumpKills: postMoveState.jumpKills,
+            hasJumped: postMoveState.hasJumped,
+            stepNumber: this.state.history.length,
+            winner: postMoveState.winner,
+        });
     }
 
     undo() {
@@ -180,6 +238,12 @@ export class Game extends React.Component {
             stepNumber: backStep,
             winner: null,
         });
+    }
+
+    setPlayers(players) {
+        this.setState({
+            players: players,
+        })
     }
 
     render() {
@@ -215,6 +279,21 @@ export class Game extends React.Component {
             default:
                 gameStatus = currentState.currentPlayer === true ? 'Player One' : 'Player Two';
                 break;
+        }
+
+        if (this.state.players === null) {
+            return(
+                <Router history={browserHistory} basename={'react-checkers'} >
+                    <div className="players-select">
+                        <div className="players">
+                            <div className="one-player" onClick={()=> this.setPlayers(1) }>One Player</div>
+                        </div>
+                        <div className="players">
+                            <div className="two-player" onClick={()=> this.setPlayers(2) }>Two Player</div>
+                        </div>
+                    </div>
+                </Router>
+            )
         }
 
         return(

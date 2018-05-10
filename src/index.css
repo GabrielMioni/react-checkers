@@ -8,6 +8,16 @@
     font-family: 'Comfortaa', cursive;
 }
 
+.players > div {
+    display: inline-block;
+    border: 3px solid wheat;
+    font-size: 30px;
+    padding: 5px 10px;
+    min-width: 250px;
+    margin: 0 0 10px 0;
+    cursor: pointer;
+}
+
 .game-board {
     display: inline-block;
     border: 10px solid #008b8b;
