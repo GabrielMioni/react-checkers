@@ -166,7 +166,7 @@ export class Game extends React.Component {
         }
     }
 
-    computerTurn() {
+    computerTurn(piece = null) {
         if (this.state.players > 1) {
             return;
         }
@@ -175,9 +175,21 @@ export class Game extends React.Component {
             const currentState = this.getCurrentState();
             const boardState = currentState.boardState;
 
-            const computerMove = this.Opponent.getRandomMove(boardState, 'player2');
-            const coordinates = computerMove.piece;
-            const moveTo = computerMove.moveTo;
+            let computerMove;
+            let coordinates;
+            let moveTo;
+
+            // If var piece != null, the piece has previously jumped.
+            if (piece === null) {
+                computerMove = this.Opponent.getRandomMove(boardState, 'player2');
+                coordinates = computerMove.piece;
+                moveTo = computerMove.moveTo;
+            } else {
+                // Prevent the computer player from choosing another piece to move. It must move the active piece
+                computerMove = this.ReactCheckers.getMoves(boardState, piece, boardState[piece].isKing, true);
+                coordinates = piece;
+                moveTo = computerMove[0][Math.floor(Math.random()*computerMove[0].length)];
+            }
 
             const clickedSquare = boardState[coordinates];
 
@@ -197,15 +209,15 @@ export class Game extends React.Component {
                 }
 
                 this.updateStatePostMove(postMoveState);
+
+                // If the computer player has jumped and is still moving, continue jump with active piece
+                if (postMoveState.currentPlayer === false) {
+                    this.computerTurn(postMoveState.activePiece);
+                }
             },
             500);
         },
         1000);
-
-        // Check if it's still the computer player's turn
-        if (this.state.history[this.state.history.length-1].currentPlayer === false) {
-            this.computerTurn();
-        }
     }
 
     updateStatePostMove(postMoveState) {
@@ -254,6 +266,8 @@ export class Game extends React.Component {
         const boardState = currentState.boardState;
         const currentPlayer = currentState.currentPlayer;
         const moves = this.state.moves;
+
+//        console.log(this.state);
 
         let gameStatus;
 
