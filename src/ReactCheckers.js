@@ -138,7 +138,7 @@ export class ReactCheckers {
 
             if (newMoves[0].length > 0) {
                 hasJumped = true;
-                setCurrentPlayer = boardState.currentPlayer;
+                setCurrentPlayer = currentState.currentPlayer;
                 setActivePiece = coordinates;
             } else {
                 hasJumped = null;
@@ -147,7 +147,7 @@ export class ReactCheckers {
 
         if (hasJumped === true) {
             if (newMoves[0].length > 0) {
-                setCurrentPlayer = boardState.currentPlayer;
+                setCurrentPlayer = currentState.currentPlayer;
                 setActivePiece = coordinates;
             }
         }
