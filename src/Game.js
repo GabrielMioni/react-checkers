@@ -181,7 +181,9 @@ export class Game extends React.Component {
 
             // If var piece != null, the piece has previously jumped.
             if (piece === null) {
-                computerMove = this.Opponent.getRandomMove(boardState, 'player2');
+                //computerMove = this.Opponent.getRandomMove(boardState, 'player2');
+                computerMove = this.Opponent.getSmartMove(this.state, boardState, 'player2');
+                
                 coordinates = computerMove.piece;
                 moveTo = computerMove.moveTo;
             } else {
